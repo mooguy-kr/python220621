@@ -1,9 +1,9 @@
-# db1.py
+# db2.py
 
 import sqlite3
 
 # 연결객체를 리턴받기 (메모리에 생성-연습)
-con = sqlite3.connect(":memory:")
+con = sqlite3.connect("c:\\work\\sample.db")
 # 커서객체를 리턴받기
 cur = con.cursor()
 # 테이블(스키마)를 생성
@@ -20,18 +20,8 @@ cur.executemany("insert into PhoneBook values(?,?);",datalist)
 
 # 검색
 cur.execute("select * from PhoneBook;")
-
-# 검색메서드 사용 (패치할때마다 버퍼에서 삭제됨)
-print("---fetchone()---")
-print(cur.fetchone())
-print("---fetchmany(2)---")
-print(cur.fetchmany(2))
+# 검색메서드 사용
 print("---fetchall()---")
 print(cur.fetchall())
-
-# for row in cur:
-#     # row 는 tuple로 받아짐 
-#     print(row)
-#     # print(row[0])
-#     # print(row[1])
-
+# 작업을 정상적으로 완료 (commit)
+con.commit()
