@@ -16,16 +16,18 @@ else:
         "create table Products (id integer primary key autoincrement, Name text, Price integer);")
 
 #디자인 파일을 로딩
-form_class = uic.loadUiType("c:\\work\\ProductList.ui")[0]
+form_class = uic.loadUiType("ProductList3.ui")[0]
 
 class Window(QMainWindow, form_class):
     def __init__(self):
         super().__init__()
+        self.setupUi(self)
+        
         #초기값 셋팅 
         self.id = 0 
         self.name = ""
         self.price = 0 
-        self.setupUi(self)
+
         #QTableWidget의 컬럼폭 셋팅하기 
         self.tableWidget.setColumnWidth(0, 100)
         self.tableWidget.setColumnWidth(1, 200)
@@ -35,11 +37,22 @@ class Window(QMainWindow, form_class):
         #QTableWidget의 컬럼 정렬하기 
         #self.tableWidget.horizontalHeaderItem(0).setTextAlignment(Qt.AlignRight)
         #self.tableWidget.horizontalHeaderItem(2).setTextAlignment(Qt.AlignRight)
+        #탭키로 네비게이션 금지 
+        self.tableWidget.setTabKeyNavigation(False)
+        #self.tableWidget.setFocusPolicy(Qt.NoFocus)
+        #엔터키를 클릭하면 다음 컨트롤로 이동하는 경우 
+        # self.prodID.tabOrder = 0 
+        # self.prodName.tabOrder = 1 
+        # self.prodPrice.tabOrder = 2 
+        #QLineEdit으로 수정함
+        self.prodID.returnPressed.connect(lambda: self.focusNextChild())
+        self.prodName.returnPressed.connect(lambda: self.focusNextChild())
+        self.prodPrice.returnPressed.connect(lambda: self.focusNextChild())
 
     def addProduct(self):
         #입력 파라메터 처리 
-        self.name = self.prodName.toPlainText()
-        self.price = self.prodPrice.toPlainText()
+        self.name = self.prodName.text()
+        self.price = self.prodPrice.text()
         cur.execute("insert into Products (Name, Price) values(?,?);", 
             (self.name, self.price))
         #리프레시
@@ -49,9 +62,9 @@ class Window(QMainWindow, form_class):
 
     def updateProduct(self):
         #업데이트 작업시 파라메터 처리 
-        self.id  = self.prodID.toPlainText()
-        self.name = self.prodName.toPlainText()
-        self.price = self.prodPrice.toPlainText()
+        self.id  = self.prodID.text()
+        self.name = self.prodName.text()
+        self.price = self.prodPrice.text()
         cur.execute("update Products set name=?, price=? where id=?;", 
             (self.name, self.price, self.id))
         #리프레시
@@ -61,7 +74,7 @@ class Window(QMainWindow, form_class):
 
     def removeProduct(self):
         #삭제 파라메터 처리 
-        self.id  = self.prodID.toPlainText()
+        self.id  = self.prodID.text() 
         strSQL = "delete from Products where id=" + str(self.id)
         cur.execute(strSQL)
         #리프레시
